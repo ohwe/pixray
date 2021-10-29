@@ -1169,7 +1169,14 @@ def train(args, cur_it):
             loss = sum(lossAll)
             loss.backward()
 
+        for x in drawer.points_vars:
+            x.grad[0][0] = 0.
+            x.grad[1][0] = 0.
+            x.grad[1][1] = 0.
+            # print(x.grad)
+            # break
         for opt in opts:
+
             opt.step()
 
         drawer.clip_z()
@@ -1503,7 +1510,8 @@ def process_args(vq_parser, namespace=None):
         'large': 4
     }
     aspect_to_size_table = {
-        'square': [144, 144],
+        'square': [2*144, 2*144],
+        # 'square': [144, 144],
         'portrait': [128, 160],
         'widescreen': [192, 108]  # vqgan trims to 192x96, 384x208, 576x320, 768x432, 960x528, 1152x640, etc
     }
