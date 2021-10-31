@@ -1173,10 +1173,11 @@ def train(args, cur_it):
             loss.backward(retain_graph=True)
 
         # DEBUG: check if we have nonzero grads
+        heights = torch.stack(drawer.points_vars)
         height_grads = torch.stack([x.grad for x in drawer.points_vars])
         max_grad = torch.max(height_grads)
-        min_height = torch.min(drawer.points_vars)
-        max_height = torch.max(drawer.points_vars)
+        min_height = torch.min(heights)
+        max_height = torch.max(heights)
         tb.add_scalar("max_height_grad", max_grad, cur_it) 
         tb.add_scalar("min_height", min_height, cur_it) 
         tb.add_scalar("max_height", max_height, cur_it) 
