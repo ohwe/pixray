@@ -1174,7 +1174,7 @@ def train(args, cur_it):
 
         # DEBUG: check if we have nonzero grads
         height_grads = torch.stack([x.grad for x in drawer.point_vars])
-	max_grad = torch.max(height_grads)
+        max_grad = torch.max(height_grads)
         min_height = torch.min(drawer.point_vars)
         max_height = torch.max(drawer.point_vars)
         tb.add_scalar("max_height_grad", max_grad, cur_it) 
