@@ -263,33 +263,33 @@ class PixelDrawer(DrawingInterface):
                             canvas_width * npcos(30) * (r+c) / (npcos(30) * (num_rows + num_cols)), 
                             canvas_width * npsin(30) * (r-c) / (npcos(30) * (num_rows + num_cols)) + canvas_width * npsin(30) * (num_cols) / (npcos(30) * (num_rows + num_cols))
                      ]
-                p1 = [
-                            p0[0],
-                            p0[1] + cell_height,
-                     ]
-
-                q0 = [ p0[0], p1[0] ]
-                q1 = [ p0[1], p1[1] ]
-
-                # print('p',p0,p1)
-                # print('q',q0,q1)
-                if self.pixel_type == "hex":
-                    pts = hex_from_corners(p0, p1)
-                elif self.pixel_type == "tri":
-                    pts = tri_from_corners(p0, p1, (r + c) % 2 == 0)
-                elif self.pixel_type == "diamond":
-                    pts = diamond_from_corners(p0, p1)
-                elif self.pixel_type == "knit":
-                    pts = knit_from_corners(p0, p1)
-                else:
-                    pts = rect_from_corners(p0, p1)
+#                p1 = [
+#                            p0[0],
+#                            p0[1] + cell_height,
+#                     ]
+#
+#                q0 = [ p0[0], p1[0] ]
+#                q1 = [ p0[1], p1[1] ]
+#
+#                # print('p',p0,p1)
+#                # print('q',q0,q1)
+#                if self.pixel_type == "hex":
+#                    pts = hex_from_corners(p0, p1)
+#                elif self.pixel_type == "tri":
+#                    pts = tri_from_corners(p0, p1, (r + c) % 2 == 0)
+#                elif self.pixel_type == "diamond":
+#                    pts = diamond_from_corners(p0, p1)
+#                elif self.pixel_type == "knit":
+#                    pts = knit_from_corners(p0, p1)
+#                else:
+#                    pts = rect_from_corners(p0, p1)
 
                 # print(pts)
                 # pts = torch.tensor(pts, dtype=torch.float32).view(-1, 2)
-                qq0 = torch.tensor([q0,], dtype=torch.float32)
-                qq0.requires_grad = True
-                qq1 = torch.tensor([q1,], dtype=torch.float32)
-                qq1.requires_grad = True
+#                qq0 = torch.tensor([q0,], dtype=torch.float32)
+#                qq0.requires_grad = True
+#                qq1 = torch.tensor([q1,], dtype=torch.float32)
+#                qq1.requires_grad = True
 
                 # pts = torch.tensor(torch.cat([q0, q1]).T, dtype=torch.float32).view(-1, 2)
                 # pts = torch.cat([q0, q1]).T.view(-1, 2)
