@@ -260,12 +260,12 @@ class PixelDrawer(DrawingInterface):
                 p1 = [cur_x+cell_width, cur_y+cell_height]
 
                 p0 = [
-                            canvas_width*npcos(30)*(r+c)/(npcos(30)*(num_rows+num_cols)), 
-                            canvas_width*npsin(30)*(r-c)/(npcos(30)*(num_rows+num_cols))+canvas_width*npsin(30)*(num_cols)/(npcos(30)*(num_rows+num_cols))
+                            canvas_width * npcos(30) * (r+c) / (npcos(30) * (num_rows + num_cols)), 
+                            canvas_width * npsin(30) * (r-c) / (npcos(30) * (num_rows + num_cols)) + canvas_width * npsin(30) * (num_cols) / (npcos(30) * (num_rows + num_cols))
                      ]
                 p1 = [
                             p0[0],
-                            p0[1]+cell_height #, # +cell_width
+                            p0[1] + cell_height,
                      ]
 
                 q0 = [ p0[0], p1[0] ]
@@ -297,12 +297,21 @@ class PixelDrawer(DrawingInterface):
                 # points_vars.append(qq0)
                 # points_vars.append(qq1)
 
-                pts = torch.tensor([[ 
-                                        [p0[0],p0[1]],
-                                        [p1[0],p1[1]], 
-                                    ],], dtype=torch.float32).view(-1, 2).contiguous()
-                pts.requires_grad = True
-                points_vars.append(pts)
+                pts_base = torch.tensor([p0, p0], dtype=torch.float32, requires_grad=False)
+                pts_vertical_brick = torch.tensor([[0., 0.], [0., 1.]], requires_grad=False)
+                height_tensor = torch.tensor(1., dtype=torch.float32, requires_grad=True)
+
+                pts = pts_base + height_tensor * pts_vertical_brick
+
+                # pts = torch.tensor([[ 
+                #                         [p0[0],p0[1]],
+                #                         [p1[0],p1[1]], 
+                #                     ],], dtype=torch.float32).view(-1, 2).contiguous()
+                # pts.requires_grad = True
+                # points_vars.append(pts)
+
+                points_vars.append(height_tensor)
+
 
                 # ptx = pts*2 # torch.stack([pts,])[0]
 

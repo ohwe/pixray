@@ -1167,12 +1167,12 @@ def train(args, cur_it):
                 checkin(args, cur_it, lossAll)
 
             loss = sum(lossAll)
-            loss.backward()
+            loss.backward(retain_graph=True)
 
-        for x in drawer.points_vars:
-            x.grad[0][0] = 0.
-            x.grad[1][0] = 0.
-            x.grad[1][1] = 0.
+        # for x in drawer.points_vars:
+        #     x.grad[0][0] = 0.
+        #     x.grad[1][0] = 0.
+        #     x.grad[1][1] = 0.
             # print(x.grad)
             # break
         for opt in opts:
