@@ -26,6 +26,8 @@ from torch_optimizer import DiffGrad, AdamP, RAdam
 from perlin_numpy import generate_fractal_noise_2d
 
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize
+from torch.utils.tensorboard import SummaryWriter
+tb = SummaryWriter()
 
 try:
     # installed by adding github.com/openai/CLIP to sys.path
@@ -47,6 +49,7 @@ from colorlookup import ColorLookup
 
 from PIL import ImageFile, Image, PngImagePlugin
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+
 
 # or 'border'
 global_padding_mode = 'reflection'
@@ -1169,7 +1172,17 @@ def train(args, cur_it):
             loss = sum(lossAll)
             loss.backward(retain_graph=True)
 
+        # DEBUG: check if we have nonzero grads
+        height_grads = torch.stack([x.grad for x in drawer.point_vars])
+	max_grad = torch.max(height_grads)
+        min_height = torch.min(drawer.point_vars)
+        max_height = torch.max(drawer.point_vars)
+        tb.add_scalar("max_height_grad", max_grad, cur_it) 
+        tb.add_scalar("min_height", min_height, cur_it) 
+        tb.add_scalar("max_height", max_height, cur_it) 
+
         # for x in drawer.points_vars:
+
         #     x.grad[0][0] = 0.
         #     x.grad[1][0] = 0.
         #     x.grad[1][1] = 0.
@@ -1182,6 +1195,7 @@ def train(args, cur_it):
         drawer.clip_z()
 
     if cur_it == args.iterations:
+        tb.close()
         # this resetting to best is currently disabled
         # drawer.set_z(best_z)
         checkin(args, cur_it, lossAll)
