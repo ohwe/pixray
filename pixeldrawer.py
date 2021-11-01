@@ -99,6 +99,8 @@ def knit_from_corners(p0, p1):
 shift_pixel_types = ["hex", "rectshift", "diamond"]
 
 class PixelDrawer(DrawingInterface):
+    VERTICAL_BRICK = torch.tensor([[0., 0.], [0., 1.]], requires_grad=False)
+
     @staticmethod
     def add_settings(parser):
         parser.add_argument("--pixel_size", nargs=2, type=int, help="Pixel size (width height)", default=None, dest='pixel_size')
@@ -214,6 +216,7 @@ class PixelDrawer(DrawingInterface):
         # Initialize Random Pixels
         color_vars = []
         points_vars = []
+        pts_bases = []
         shapes = []
         shape_groups = []
         # colors = []
@@ -255,24 +258,11 @@ class PixelDrawer(DrawingInterface):
                         mono_color = random.random()
                         cell_color = torch.tensor([mono_color, mono_color, mono_color, 1.0])
                 # colors.append(cell_color)
-                p0 = [cur_x, cur_y]
-
-                p1 = [cur_x+cell_width, cur_y+cell_height]
-
                 p0 = [
                             canvas_width * npcos(30) * (r+c) / (npcos(30) * (num_rows + num_cols)), 
                             canvas_width * npsin(30) * (r-c) / (npcos(30) * (num_rows + num_cols)) + canvas_width * npsin(30) * (num_cols) / (npcos(30) * (num_rows + num_cols))
                      ]
-#                p1 = [
-#                            p0[0],
-#                            p0[1] + cell_height,
-#                     ]
-#
-#                q0 = [ p0[0], p1[0] ]
-#                q1 = [ p0[1], p1[1] ]
-#
-#                # print('p',p0,p1)
-#                # print('q',q0,q1)
+
 #                if self.pixel_type == "hex":
 #                    pts = hex_from_corners(p0, p1)
 #                elif self.pixel_type == "tri":
@@ -284,54 +274,19 @@ class PixelDrawer(DrawingInterface):
 #                else:
 #                    pts = rect_from_corners(p0, p1)
 
-                # print(pts)
-                # pts = torch.tensor(pts, dtype=torch.float32).view(-1, 2)
-#                qq0 = torch.tensor([q0,], dtype=torch.float32)
-#                qq0.requires_grad = True
-#                qq1 = torch.tensor([q1,], dtype=torch.float32)
-#                qq1.requires_grad = True
-
-                # pts = torch.tensor(torch.cat([q0, q1]).T, dtype=torch.float32).view(-1, 2)
-                # pts = torch.cat([q0, q1]).T.view(-1, 2)
-                # pts = torch.cat([qq0, qq1]).T.view(-1, 2).contiguous()
-                # points_vars.append(qq0)
-                # points_vars.append(qq1)
-
                 pts_base = torch.tensor([p0, p0], dtype=torch.float32, requires_grad=False)
-                pts_vertical_brick = torch.tensor([[0., 0.], [0., 1.]], requires_grad=False)
                 height_tensor = torch.tensor(1., dtype=torch.float32, requires_grad=True)
 
-                pts = pts_base + height_tensor * pts_vertical_brick
-
-                # pts = torch.tensor([[ 
-                #                         [p0[0],p0[1]],
-                #                         [p1[0],p1[1]], 
-                #                     ],], dtype=torch.float32).view(-1, 2).contiguous()
-                # pts.requires_grad = True
-                # points_vars.append(pts)
+                pts = pts_base + height_tensor * self.VERTICAL_BRICK
 
                 points_vars.append(height_tensor)
 
-
-                # ptx = pts*2 # torch.stack([pts,])[0]
-
-
-                # print(pts.shape)
-                # print(pts)
-                # pts.requires_grad = True
-                # points_vars.append(pts)
-
                 path = pydiffvg.Polygon(pts, False, stroke_width = torch.tensor(2))
-                # path = pydiffvg.Polygon(ptx, False, stroke_width = torch.tensor(2))
-                # path = pydiffvg.Path(2,pts, False, stroke_width=cell_width)
-                # stroke_width
-                # path = pydiffvg.Rect(p_min=torch.tensor(p0), p_max=torch.tensor(p1))
+
+                pts_bases.append(pts_base)
                 shapes.append(path)
                 path_group = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes) - 1]), stroke_color = cell_color, fill_color = None)
                 shape_groups.append(path_group)
-
-        # shape_groups = shape_groups[:10]
-        # shapes = shapes[:10]
 
         # exit()
         # Just some diffvg setup
@@ -374,6 +329,13 @@ class PixelDrawer(DrawingInterface):
             return self.img
 
         render = pydiffvg.RenderFunction.apply
+
+#### re-assign
+        for pts_base, height_tensor, path in zip(self.pts_bases, self.point_vars, self.shapes):
+
+            pts = pts_base + height_tensor * self.VERTICAL_BRICK
+            path.points = pts
+####
         scene_args = pydiffvg.RenderFunction.serialize_scene(\
             self.canvas_width, self.canvas_height, self.shapes, self.shape_groups)
         img = render(self.canvas_width, self.canvas_height, 2, 2, cur_iteration, None, *scene_args)
