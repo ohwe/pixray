@@ -303,6 +303,7 @@ class PixelDrawer(DrawingInterface):
         self.color_vars = color_vars
         self.points_vars = points_vars
         self.img = img
+        self.pts_bases = pts_bases
         self.shapes = shapes 
         self.shape_groups  = shape_groups
 
