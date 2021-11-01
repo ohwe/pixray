@@ -275,9 +275,9 @@ class PixelDrawer(DrawingInterface):
 #                    pts = rect_from_corners(p0, p1)
 
                 pts_base = torch.tensor([p0, p0], dtype=torch.float32, requires_grad=False)
-                height_tensor = torch.tensor(cell_height ** .5, dtype=torch.float32, requires_grad=True)
+                height_tensor = torch.tensor(cell_height, dtype=torch.float32, requires_grad=True)
 
-                pts = pts_base - height_tensor * height_tensor * self.VERTICAL_BRICK
+                pts = pts_base - torch.abs(height_tensor) * self.VERTICAL_BRICK
 
                 points_vars.append(height_tensor)
 
@@ -333,8 +333,7 @@ class PixelDrawer(DrawingInterface):
 
 #### re-assign
         for pts_base, height_tensor, path in zip(self.pts_bases, self.points_vars, self.shapes):
-
-            pts = pts_base - height_tensor * height_tensor * self.VERTICAL_BRICK
+            pts = pts_base - torch.abs(height_tensor) * self.VERTICAL_BRICK
             path.points = pts
 ####
         scene_args = pydiffvg.RenderFunction.serialize_scene(\
