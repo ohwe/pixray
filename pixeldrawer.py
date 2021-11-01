@@ -332,7 +332,7 @@ class PixelDrawer(DrawingInterface):
         render = pydiffvg.RenderFunction.apply
 
 #### re-assign
-        for pts_base, height_tensor, path in zip(self.pts_bases, self.point_vars, self.shapes):
+        for pts_base, height_tensor, path in zip(self.pts_bases, self.points_vars, self.shapes):
 
             pts = pts_base + height_tensor * self.VERTICAL_BRICK
             path.points = pts
