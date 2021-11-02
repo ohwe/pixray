@@ -17,11 +17,20 @@ import PIL.Image
 from util import str2bool
 
 def npsin(x):
-    return np.sin(x*np.pi/180)
-def npcos(x):
-    return np.cos(x*np.pi/180)
+    return np.sin(x * np.pi / 180)
 
-def rect_from_corners(p0, p1):
+def npcos(x):
+    return np.cos(x * np.pi / 180)
+
+def get_point_base(r, c, attack, canvas_width):
+    point = [
+             canvas_width * npcos(attack) * (r + c) / (npcos(attack) * (num_rows + num_cols)), 
+             canvas_width * npsin(attack) * (r - c) / (npcos(attack) * (num_rows + num_cols)) + \
+                 canvas_width * npsin(attack) * (num_cols) / (npcos(attack) * (num_rows + num_cols))
+    ]
+    return point
+
+def rect_from_corners(pp00, p1):
     x1, y1 = p0
     x2, y2 = p1
     pts = [[x1, y1], [x2, y1], [x2, y2], [x1, y2]]
@@ -258,11 +267,13 @@ class PixelDrawer(DrawingInterface):
                         mono_color = random.random()
                         cell_color = torch.tensor([mono_color, mono_color, mono_color, 1.0])
                 # colors.append(cell_color)
-                p0 = [
-                            canvas_width * npcos(30) * (r+c) / (npcos(30) * (num_rows + num_cols)), 
-                            canvas_width * npsin(30) * (r-c) / (npcos(30) * (num_rows + num_cols)) + canvas_width * npsin(30) * (num_cols) / (npcos(30) * (num_rows + num_cols))
-                     ]
-
+                 p30 = get_point_base(r, c, 30, canvas_width)
+                 p45 = get_point_base(r, c, 45, canvas_width)
+#                p0 = [
+#                            canvas_width * npcos(30) * (r+c) / (npcos(30) * (num_rows + num_cols)), 
+#                            canvas_width * npsin(30) * (r-c) / (npcos(30) * (num_rows + num_cols)) + canvas_width * npsin(30) * (num_cols) / (npcos(30) * (num_rows + num_cols))
+#                     ]
+#
 #                if self.pixel_type == "hex":
 #                    pts = hex_from_corners(p0, p1)
 #                elif self.pixel_type == "tri":
@@ -274,9 +285,12 @@ class PixelDrawer(DrawingInterface):
 #                else:
 #                    pts = rect_from_corners(p0, p1)
 
-                pts_base = torch.tensor([p0, p0], dtype=torch.float32, requires_grad=False)
+                pts_base_30 = torch.tensor([p30, p30], dtype=torch.float32, requires_grad=False)
+                pts_base_45 = torch.tensor([p45, p45], dtype=torch.float32, requires_grad=False)
                 height_tensor = torch.tensor(cell_height, dtype=torch.float32, requires_grad=True)
 
+		# testing
+		pts = pts_base_45
                 pts = pts_base - torch.abs(height_tensor) * self.VERTICAL_BRICK
 
                 points_vars.append(height_tensor)
