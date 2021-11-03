@@ -267,8 +267,8 @@ class PixelDrawer(DrawingInterface):
                         mono_color = random.random()
                         cell_color = torch.tensor([mono_color, mono_color, mono_color, 1.0])
                 # colors.append(cell_color)
-                 p30 = get_point_base(r, c, 30, canvas_width)
-                 p45 = get_point_base(r, c, 45, canvas_width)
+                p30 = get_point_base(r, c, 30, canvas_width)
+                p45 = get_point_base(r, c, 45, canvas_width)
 #                p0 = [
 #                            canvas_width * npcos(30) * (r+c) / (npcos(30) * (num_rows + num_cols)), 
 #                            canvas_width * npsin(30) * (r-c) / (npcos(30) * (num_rows + num_cols)) + canvas_width * npsin(30) * (num_cols) / (npcos(30) * (num_rows + num_cols))
