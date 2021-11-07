@@ -389,7 +389,7 @@ class PixelDrawer(DrawingInterface):
         render = pydiffvg.RenderFunction.apply
 
 #### re-assign
-        if cur_iteration % 2:
+        if cur_iteration % 3: # 45, 30, 30, 45, 30, 30 ....
             pts_bases = self.pts_bases_30
             shapes = self.shapes_30
             shape_groups = self.shape_groups_30
