@@ -974,6 +974,9 @@ def ascend_txt(args):
                 result.append(prompt(iii_so))
 
         iii = perceptor.encode_image(normalize( cur_cutouts[cutoutSize] )).float()
+        print(cur_cutouts[cutoutSize].shape)
+        print(normalize( cur_cutouts[cutoutSize] ).shape)
+        print(iii.shape)
 
         pMs = pmsTable[clip_model]
         for prompt in pMs:
@@ -1444,6 +1447,7 @@ def setup_parser(vq_parser):
     vq_parser.add_argument("-smo",  "--smoothness", type=float, help="encourage smoothness, 0 -- skip", default=0, dest='smoothness')
     vq_parser.add_argument("-est",  "--smoothness_type", type=str, help="enforce smoothness type: default/clipped/log", default='default', dest='smoothness_type')
     vq_parser.add_argument("-sat",  "--saturation", type=float, help="encourage saturation, 0 -- skip", default=0, dest='saturation')
+    vq_parser.add_argument("-prjs", "--projections", type=int, help="How many projections from synth", default=1, dest='projections')
 
     return vq_parser
 
