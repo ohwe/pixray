@@ -922,13 +922,13 @@ def checkin(args, iter, losses):
             display.display(display.Image(outfile))
     tqdm.write(writestr)
 
-def ascend_txt(args):
+def ascend_txt(args, iter_shift=0):
     global cur_iteration, cur_anim_index, perceptors, normalize, cutoutsTable, cutoutSizeTable
     global z_orig, im_targets, z_labels, init_image_tensor, target_image_tensor, drawer
     global pmsTable, pmsImageTable, spotPmsTable, spotOffPmsTable, global_padding_mode
     global pmsTargetTable
 
-    out = drawer.synth(cur_iteration);
+    out = drawer.synth(cur_iteration+iter_shift);
 
     result = []
 
@@ -974,12 +974,12 @@ def ascend_txt(args):
                 result.append(prompt(iii_so))
 
         iii = perceptor.encode_image(normalize( cur_cutouts[cutoutSize] )).float()
-        with open('tmp_log.txt', 'a') as fh:
-            print(cur_cutouts[cutoutSize].shape, file=fh)
-            print(normalize( cur_cutouts[cutoutSize] ).shape, file=fh)
-            print(iii.shape, file=fh)
-            print('', file=fh)
-            
+        # with open('tmp_log.txt', 'a') as fh:
+        #     print(cur_cutouts[cutoutSize].shape, file=fh)
+        #     print(normalize( cur_cutouts[cutoutSize] ).shape, file=fh)
+        #     print(iii.shape, file=fh)
+        #     print('', file=fh)
+
         pMs = pmsTable[clip_model]
         for prompt in pMs:
             result.append(prompt(iii))
@@ -1159,7 +1159,9 @@ def train(args, cur_it):
         # num_batches = args.batches * (num_loss_drop + 1)
         num_batches = args.batches
         for i in range(num_batches):
-            lossAll = ascend_txt(args)
+            lossAll_list = []
+            for prj_idx in range(args.projections):
+                lossAll_list.append( ascend_txt(args, prj_idx) )
 
             if i == 0:
                 if cur_anim_index is None or cur_anim_index == 0:
@@ -1167,14 +1169,15 @@ def train(args, cur_it):
                         print("Dropping learning rate")
                         rebuild_opts_when_done = True
                     else:
-                        did_drop = checkdrop(args, cur_it, lossAll)
+                        did_drop = checkdrop(args, cur_it, lossAll_list[0])
                         if args.auto_stop is True:
                             rebuild_opts_when_done = disabl
 
             if i == 0 and cur_it % args.save_every == 0:
-                checkin(args, cur_it, lossAll)
+                checkin(args, cur_it, lossAll_list[0])
 
-            loss = sum(lossAll)
+            # loss = sum(lossAll)
+            loss = sum(map(sum,lossAll_list))
             loss.backward(retain_graph=True)
 
         # DEBUG: check if we have nonzero grads
