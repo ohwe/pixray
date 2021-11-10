@@ -974,10 +974,12 @@ def ascend_txt(args):
                 result.append(prompt(iii_so))
 
         iii = perceptor.encode_image(normalize( cur_cutouts[cutoutSize] )).float()
-        print(cur_cutouts[cutoutSize].shape)
-        print(normalize( cur_cutouts[cutoutSize] ).shape)
-        print(iii.shape)
-
+        with open('tmp_log.txt', 'a') as fh:
+            print(cur_cutouts[cutoutSize].shape, file=fh)
+            print(normalize( cur_cutouts[cutoutSize] ).shape, file=fh)
+            print(iii.shape, file=fh)
+            print('', file=fh)
+            
         pMs = pmsTable[clip_model]
         for prompt in pMs:
             result.append(prompt(iii))
