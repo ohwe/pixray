@@ -19,4 +19,4 @@
 * https://www.tensorflow.org/graphics/api_docs/python/tfg/rendering
 * https://revdancatt.com/2020/01/30/penplotting-perlin-landscapes
 * https://twitter.com/twominutepapers/status/1458091504174575632
-
+* https://arxiv.org/abs/2109.07161 + https://github.com/saic-mdal/lama
