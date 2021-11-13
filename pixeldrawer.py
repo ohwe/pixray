@@ -16,19 +16,47 @@ import PIL.Image
 
 from util import str2bool
 
+from scipy.spatial.transform import Rotation as R
+import math
+
+
 def npsin(x):
     return np.sin(x * np.pi / 180)
 
 def npcos(x):
     return np.cos(x * np.pi / 180)
 
-def get_point_base(r, c, attack, canvas_width, num_rows, num_cols):
-    point = [
-             canvas_width * npcos(attack) * (r + c) / (npcos(attack) * (num_rows + num_cols)), 
-             canvas_width * npsin(attack) * (r - c) / (npcos(attack) * (num_rows + num_cols)) + \
-                 canvas_width * npsin(attack) * (num_cols) / (npcos(attack) * (num_rows + num_cols))
-    ]
-    return point
+class Projector:
+   def __init__(self, canvas_width, num_rows, num_cols):
+       self.canvas_width = canvas_width 
+       self.num_rows = num_rows
+       self.num_cols = num_cols
+
+       self.scale_factor = int(math.floor(math.sqrt(2) * canvas_width / (num_rows + num_cols)))
+       self.center_point = np.array([
+           canvas_width // 2, 
+           canvas_width // 2, 
+       ])
+
+   def __call__(self, r:int, c:int, phi: int, theta: int):
+       r_centered = r - self.num_rows // 2
+       c_centered = c - self.num_cols // 2
+       base_point = np.array([r_centered, c_centered, 0])
+
+       rotation = R.from_euler('zx', [phi, theta], degrees=True)
+       rotated = rotation.apply(base_point) 
+       rotated_xy = np.roll(rotated, 1)[2:]  # (x, y, z) -> (z, x, y) -> (z, x) 
+
+       return rotated_xy * self.scale_factor + self.center_point
+
+
+#def get_point_base(r, c, attack, canvas_width, num_rows, num_cols):
+#    point = [
+#             canvas_width * npcos(attack) * (r + c) / (npcos(attack) * (num_rows + num_cols)), 
+#             canvas_width * npsin(attack) * (r - c) / (npcos(attack) * (num_rows + num_cols)) + \
+#                 canvas_width * npsin(attack) * (num_cols) / (npcos(attack) * (num_rows + num_cols))
+#    ]
+#    return point
 
 def make_path(point_base, height):
     pass
@@ -283,10 +311,21 @@ class PixelDrawer(DrawingInterface):
                         mono_color = random.random()
                         cell_color = torch.tensor([mono_color, mono_color, mono_color, 1.0])
                 # colors.append(cell_color)
-                p30 = get_point_base(r, c, 30, canvas_width, num_rows, num_cols)
-                p45 = get_point_base(r, c, 45, canvas_width, num_rows, num_cols)
 
-                p30r90 = get_point_base(c, r, 30, canvas_width, num_rows, num_cols)
+                projector = Projector(canvas_width, num_rows, num_cols)
+#                for phi in range(0, 180 + 1, 15):
+#                   for theta in range(30, 75, 5):
+#                       pass 
+                voxel_base_projections = [
+                    projector(r, c, phi, theta)
+                    for phi, theta in [(0, 30), (0, 45), (90, 30)]
+                ]
+                     
+#                p30 = get_point_base(r, c, 30, canvas_width, num_rows, num_cols)
+#                p45 = get_point_base(r, c, 45, canvas_width, num_rows, num_cols)
+#
+#                p30r90 = get_point_base(c, r, 30, canvas_width, num_rows, num_cols)
+
 #                p0 = [
 #                            canvas_width * npcos(30) * (r+c) / (npcos(30) * (num_rows + num_cols)), 
 #                            canvas_width * npsin(30) * (r-c) / (npcos(30) * (num_rows + num_cols)) + canvas_width * npsin(30) * (num_cols) / (npcos(30) * (num_rows + num_cols))
@@ -303,21 +342,29 @@ class PixelDrawer(DrawingInterface):
 #                else:
 #                    pts = rect_from_corners(p0, p1)
 
-                pts_base_30 = torch.tensor([p30, p30], dtype=torch.float32, requires_grad=False)
-                pts_base_45 = torch.tensor([p45, p45], dtype=torch.float32, requires_grad=False)
-                pts_base_30r90 = torch.tensor([p30r90, p30r90], dtype=torch.float32, requires_grad=False)
+#                pts_base_30 = torch.tensor([p30, p30], dtype=torch.float32, requires_grad=False)
+#                pts_base_45 = torch.tensor([p45, p45], dtype=torch.float32, requires_grad=False)
+#                pts_base_30r90 = torch.tensor([p30r90, p30r90], dtype=torch.float32, requires_grad=False)
+                pre_voxels = [
+                    torch.tensor([voxel_base_projection, voxel_base_projection], dtype=torch.float32, requires_grad=False)
+                    for voxel_base_projection in voxel_base_projections
+                ]
 
                 height_tensor = torch.tensor(cell_height, dtype=torch.float32, requires_grad=True)
-
-		# testing
-                pts_base = pts_base_45
-                pts = pts_base - torch.abs(height_tensor) * self.VERTICAL_BRICK
-
-                pts_30 = pts_base_30 - torch.abs(height_tensor) * self.VERTICAL_BRICK
-                pts_45 = pts_base_45 - torch.abs(height_tensor) * self.VERTICAL_BRICK
-                pts_30r90 = pts_base_30r90 - torch.abs(height_tensor) * self.VERTICAL_BRICK
-
                 points_vars.append(height_tensor)
+
+                voxels = [
+                    pre_voxel - torch.abs(height_tensor) * self.VERTICAL_BRICK
+                    for pre_voxel in pre_voxels
+                ]
+		# testing
+#                pts_base = pts_base_45
+#                pts = pts_base - torch.abs(height_tensor) * self.VERTICAL_BRICK
+#
+#                pts_30 = pts_base_30 - torch.abs(height_tensor) * self.VERTICAL_BRICK
+#                pts_45 = pts_base_45 - torch.abs(height_tensor) * self.VERTICAL_BRICK
+#                pts_30r90 = pts_base_30r90 - torch.abs(height_tensor) * self.VERTICAL_BRICK
+
 
                 path = pydiffvg.Polygon(pts, False, stroke_width = torch.tensor(2))
 
@@ -325,10 +372,11 @@ class PixelDrawer(DrawingInterface):
                 path_45 = pydiffvg.Polygon(pts_45, False, stroke_width = torch.tensor(2))
                 path_30r90 = pydiffvg.Polygon(pts_30r90, False, stroke_width = torch.tensor(2))
 
-                pts_bases.append(pts_base)
-                pts_bases_30.append(pts_base_30)
-                pts_bases_45.append(pts_base_45)
-                pts_bases_30r90.append(pts_base_30r90)
+                pre_voxel_map.append(pre_voxels)
+#                pts_bases.append(pts_base)
+#                pts_bases_30.append(pts_base_30)
+#                pts_bases_45.append(pts_base_45)
+#                pts_bases_30r90.append(pts_base_30r90)
 
                 shapes.append(path)
                 shapes_30.append(path_30)
