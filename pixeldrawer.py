@@ -262,18 +262,24 @@ class PixelDrawer(DrawingInterface):
         pts_bases_45 = []
         pts_bases_30r90 = []
 
-        shapes = []
-        shapes_30 = []
-        shapes_45 = []
-        shapes_30r90 = []
+#        shapes_30 = []
+#        shapes_45 = []
+#        shapes_30r90 = []
 
         shape_groups = []
-        shape_groups_30 = []
-        shape_groups_45 = []
-        shape_groups_30r90 = []
+#        shape_groups_30 = []
+#        shape_groups_45 = []
+#        shape_groups_30r90 = []
 
         # colors = []
         scaled_init_tensor = (init_tensor[0] + 1.0) / 2.0
+
+        projector = Projector(canvas_width, num_rows, num_cols)
+        phis_thetas = [(0, 30), (0, 45), (90, 30)]
+        # phis_thetas = [(phi, theta) for phi in range(0, 180 + 1, 15) for theta in range(30, 75 + 1, 5)]
+        many_shapes = [list() for _ in phis_thetas]
+        many_scene_args = [list() for _ in phis_thetas]
+
         for r in range(num_rows):
             tensor_cur_y = int(r * tensor_cell_height)
             cur_y = r * cell_height
@@ -312,13 +318,9 @@ class PixelDrawer(DrawingInterface):
                         cell_color = torch.tensor([mono_color, mono_color, mono_color, 1.0])
                 # colors.append(cell_color)
 
-                projector = Projector(canvas_width, num_rows, num_cols)
-#                for phi in range(0, 180 + 1, 15):
-#                   for theta in range(30, 75, 5):
-#                       pass 
                 voxel_base_projections = [
                     projector(r, c, phi, theta)
-                    for phi, theta in [(0, 30), (0, 45), (90, 30)]
+                    for phi, theta in phis_thetas 
                 ]
                      
 #                p30 = get_point_base(r, c, 30, canvas_width, num_rows, num_cols)
@@ -366,11 +368,15 @@ class PixelDrawer(DrawingInterface):
 #                pts_30r90 = pts_base_30r90 - torch.abs(height_tensor) * self.VERTICAL_BRICK
 
 
-                path = pydiffvg.Polygon(pts, False, stroke_width = torch.tensor(2))
-
-                path_30 = pydiffvg.Polygon(pts_30, False, stroke_width = torch.tensor(2))
-                path_45 = pydiffvg.Polygon(pts_45, False, stroke_width = torch.tensor(2))
-                path_30r90 = pydiffvg.Polygon(pts_30r90, False, stroke_width = torch.tensor(2))
+                paths = [
+                    pydiffvg.Polygon(voxel, False, stroke_width = torch.tensor(2))
+                    for voxel in voxels
+                ]
+#                path = pydiffvg.Polygon(pts, False, stroke_width = torch.tensor(2))
+#
+#                path_30 = pydiffvg.Polygon(pts_30, False, stroke_width = torch.tensor(2))
+#                path_45 = pydiffvg.Polygon(pts_45, False, stroke_width = torch.tensor(2))
+#                path_30r90 = pydiffvg.Polygon(pts_30r90, False, stroke_width = torch.tensor(2))
 
                 pre_voxel_map.append(pre_voxels)
 #                pts_bases.append(pts_base)
@@ -378,64 +384,69 @@ class PixelDrawer(DrawingInterface):
 #                pts_bases_45.append(pts_base_45)
 #                pts_bases_30r90.append(pts_base_30r90)
 
-                shapes.append(path)
-                shapes_30.append(path_30)
-                shapes_45.append(path_45)
-                shapes_30r90.append(path_30r90)
+                for shapes, path in zip(
+                    many_shapes,
+                    paths
+                ):
+                    shapes.append(path)
 
-                path_group = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes) - 1]), stroke_color = cell_color, fill_color = None)
-                path_group_30 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_30) - 1]), stroke_color = cell_color, fill_color = None)
-                path_group_45 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_45) - 1]), stroke_color = cell_color, fill_color = None)
-                path_group_30r90 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_30r90) - 1]), stroke_color = cell_color, fill_color = None)
-
+                path_group = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes[0]) - 1]), stroke_color = cell_color, fill_color = None)
                 shape_groups.append(path_group)
+#                path_group_30 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_30) - 1]), stroke_color = cell_color, fill_color = None)
+#                path_group_45 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_45) - 1]), stroke_color = cell_color, fill_color = None)
+#                path_group_30r90 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_30r90) - 1]), stroke_color = cell_color, fill_color = None)
 
-                shape_groups_30.append(path_group_30)
-                shape_groups_45.append(path_group_45)
-                shape_groups_30r90.append(path_group_30r90)
+
+#                shape_groups_30.append(path_group_30)
+#                shape_groups_45.append(path_group_45)
+#                shape_groups_30r90.append(path_group_30r90)
         # exit()
         # Just some diffvg setup
 
-        scene_args = pydiffvg.RenderFunction.serialize_scene(\
-            canvas_width, canvas_height, shapes, shape_groups)
+        for shapes in many_shapes:
+            scene_args = pydiffvg.RenderFunction.serialize_scene(\
+                canvas_width, canvas_height, shapes, shape_groups)
 
-        scene_args_30 = pydiffvg.RenderFunction.serialize_scene(\
-            canvas_width, canvas_height, shapes_30, shape_groups_30)
-        scene_args_45 = pydiffvg.RenderFunction.serialize_scene(\
-            canvas_width, canvas_height, shapes_45, shape_groups_45)
-        scene_args_30r90 = pydiffvg.RenderFunction.serialize_scene(\
-            canvas_width, canvas_height, shapes_45, shape_groups_30r90)
-
-        render = pydiffvg.RenderFunction.apply
-
-        img = render(canvas_width, canvas_height, 2, 2, 0, None, *scene_args)
-        img_30 = render(canvas_width, canvas_height, 2, 2, 0, None, *scene_args_30)
-        img_45 = render(canvas_width, canvas_height, 2, 2, 0, None, *scene_args_45)
-        img_30r90 = render(canvas_width, canvas_height, 2, 2, 0, None, *scene_args_30r90)
+            render = pydiffvg.RenderFunction.apply
+            img = render(canvas_width, canvas_height, 2, 2, 0, None, *scene_args)
 
         for group in shape_groups:
             group.stroke_color.requires_grad = True
-            # group.stroke_color.requires_grad = True
             color_vars.append(group.stroke_color)
+
+#        scene_args_30 = pydiffvg.RenderFunction.serialize_scene(\
+#            canvas_width, canvas_height, shapes_30, shape_groups_30)
+#        scene_args_45 = pydiffvg.RenderFunction.serialize_scene(\
+#            canvas_width, canvas_height, shapes_45, shape_groups_45)
+#        scene_args_30r90 = pydiffvg.RenderFunction.serialize_scene(\
+#            canvas_width, canvas_height, shapes_45, shape_groups_30r90)
+
+
+#        img_30 = render(canvas_width, canvas_height, 2, 2, 0, None, *scene_args_30)
+#        img_45 = render(canvas_width, canvas_height, 2, 2, 0, None, *scene_args_45)
+#        img_30r90 = render(canvas_width, canvas_height, 2, 2, 0, None, *scene_args_30r90)
+
 
         self.color_vars = color_vars
         self.points_vars = points_vars
         self.img = img
 
         self.pts_bases = pts_bases
-        self.pts_bases_30 = pts_bases_30
-        self.pts_bases_45 = pts_bases_45
-        self.pts_bases_30r90 = pts_bases_30r90
+#        self.pts_bases_30 = pts_bases_30
+#        self.pts_bases_45 = pts_bases_45
+#        self.pts_bases_30r90 = pts_bases_30r90
 
-        self.shapes = shapes 
-        self.shapes_30 = shapes_30 
-        self.shapes_45 = shapes_45 
-        self.shapes_30r90 = shapes_30r90 
+#        self.shapes = shapes 
+        self_many_shapes = many_shapes
+        self.pre_voxels = pre_voxels
+#        self.shapes_30 = shapes_30 
+#        self.shapes_45 = shapes_45 
+#        self.shapes_30r90 = shapes_30r90 
 
         self.shape_groups = shape_groups
-        self.shape_groups_30 = shape_groups_30
-        self.shape_groups_45 = shape_groups_45
-        self.shape_groups_30r90 = shape_groups_30r90
+#        self.shape_groups_30 = shape_groups_30
+#        self.shape_groups_45 = shape_groups_45
+#        self.shape_groups_30r90 = shape_groups_30r90
 
     def get_opts(self, decay_divisor=1):
         # Optimizers
@@ -461,23 +472,27 @@ class PixelDrawer(DrawingInterface):
 
         render = pydiffvg.RenderFunction.apply
 
+        view_index = cur_iteration % len(self.many_shapes)
 #### re-assign
-        if cur_iteration % 3 == 0: # 45, 30r90, 30, 45, 30r90, 30 ....
-            pts_bases = self.pts_bases_30
-            shapes = self.shapes_30
-            shape_groups = self.shape_groups_30
-        elif cur_iteration % 3 == 1:
-            pts_bases = self.pts_bases_30r90
-            shapes = self.shapes_30r90
-            shape_groups = self.shape_groups_30r90
-        else:
-            pts_bases = self.pts_bases_45
-            shapes = self.shapes_45
-            shape_groups = self.shape_groups_45
-  
+#        if cur_iteration % 3 == 0: # 45, 30r90, 30, 45, 30r90, 30 ....
+#            pts_bases = self.pts_bases_30
+#            shapes = self.shapes_30
+#            shape_groups = self.shape_groups_30
+#        elif cur_iteration % 3 == 1:
+#            pts_bases = self.pts_bases_30r90
+#            shapes = self.shapes_30r90
+#            shape_groups = self.shape_groups_30r90
+#        else:
+#            pts_bases = self.pts_bases_45
+#            shapes = self.shapes_45
+#            shape_groups = self.shape_groups_45
+ 
+        shapes = self.many_shapes[view_index] 
+        pre_voxels = self.pre_voxels[view_index]
+        shape_groups = self.shape_groups
 
-        for pts_base, height_tensor, path in zip(pts_bases, self.points_vars, shapes):
-            pts = pts_base - torch.abs(height_tensor) * self.VERTICAL_BRICK
+        for pre_voxel, height_tensor, path in zip(pre_voxels, self.points_vars, shapes):
+            voxel = pre_voxel - torch.abs(height_tensor) * self.VERTICAL_BRICK
             path.points = pts
 ####
         scene_args = pydiffvg.RenderFunction.serialize_scene(\
