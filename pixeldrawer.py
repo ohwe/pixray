@@ -279,6 +279,7 @@ class PixelDrawer(DrawingInterface):
         # phis_thetas = [(phi, theta) for phi in range(0, 180 + 1, 15) for theta in range(30, 75 + 1, 5)]
         many_shapes = [list() for _ in phis_thetas]
         many_scene_args = [list() for _ in phis_thetas]
+        pre_voxel_map = []
 
         for r in range(num_rows):
             tensor_cur_y = int(r * tensor_cell_height)
