@@ -391,7 +391,7 @@ class PixelDrawer(DrawingInterface):
                 ):
                     shapes.append(path)
 
-                path_group = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes[0]) - 1]), stroke_color = cell_color, fill_color = None)
+                path_group = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(many_shapes[0]) - 1]), stroke_color = cell_color, fill_color = None)
                 shape_groups.append(path_group)
 #                path_group_30 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_30) - 1]), stroke_color = cell_color, fill_color = None)
 #                path_group_45 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_45) - 1]), stroke_color = cell_color, fill_color = None)
