@@ -494,7 +494,7 @@ class PixelDrawer(DrawingInterface):
 
         for pre_voxel, height_tensor, path in zip(pre_voxels, self.points_vars, shapes):
             voxel = pre_voxel - torch.abs(height_tensor) * self.VERTICAL_BRICK
-            path.points = pts
+            path.points = voxel
 ####
         scene_args = pydiffvg.RenderFunction.serialize_scene(\
             self.canvas_width, self.canvas_height, shapes, shape_groups)
