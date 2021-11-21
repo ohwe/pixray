@@ -438,7 +438,7 @@ class PixelDrawer(DrawingInterface):
 #        self.pts_bases_30r90 = pts_bases_30r90
 
 #        self.shapes = shapes 
-        self_many_shapes = many_shapes
+        self.many_shapes = many_shapes
         self.pre_voxels = pre_voxels
 #        self.shapes_30 = shapes_30 
 #        self.shapes_45 = shapes_45 
