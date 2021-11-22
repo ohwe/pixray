@@ -246,7 +246,7 @@ class PixelDrawer(DrawingInterface):
                 ]
                      
                 pre_voxels = [
-                    torch.tensor([voxel_base_projection, voxel_base_projection].T, dtype=torch.float32, requires_grad=False)
+                    torch.tensor([voxel_base_projection, voxel_base_projection], dtype=torch.float32, requires_grad=False).T
                     for voxel_base_projection in voxel_base_projections
                 ]
 
