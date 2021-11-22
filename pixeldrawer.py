@@ -71,71 +71,6 @@ def rect_from_corners(pp00, p1):
 def map_number(n, start1, stop1, start2, stop2):
   return ((n-start1)/(stop1-start1))*(stop2-start2)+start2;
 
-def diamond_from_corners(p0, p1):
-    x1, y1 = p0
-    x2, y2 = p1
-    n = 1
-    hyA = map_number(-2, -n, n, y1, y2)
-    hyB = map_number( 2, -n, n, y1, y2)
-    hyH = map_number(     0, -n, n, y1, y2)
-    hxH = map_number(     0, -n, n, x1, x2)
-    pts = [[hxH, hyA], [x1, hyH], [hxH, hyB], [x2, hyH]]
-    return pts
-
-def tri_from_corners(p0, p1, is_up):
-    x1, y1 = p0
-    x2, y2 = p1
-    n = 1
-    hxA = map_number( 2, -n, n, x1, x2)
-    hxB = map_number(-2, -n, n, x1, x2)
-    hxH = map_number(     0, -n, n, x1, x2)
-    if is_up:
-        pts = [[hxH, y1], [hxB, y2], [hxA, y2]]
-    else:
-        pts = [[hxH, y2], [hxA, y1], [hxB, y1]]
-    return pts
-
-def hex_from_corners(p0, p1):
-    x1, y1 = p0
-    x2, y2 = p1
-    n  = 3
-    hyA = map_number(4, -n, n, y1, y2)
-    hyB = map_number(2, -n, n, y1, y2)
-    hyC = map_number(-2, -n, n, y1, y2)
-    hyD = map_number(-4, -n, n, y1, y2)
-    hxH = map_number(0, -n, n, x1, x2)
-    pts = [[hxH, hyA], [x1, hyB], [x1, hyC], [hxH, hyD], [x2, hyC], [x2, hyB]]
-    return pts
-
-def knit_from_corners(p0, p1):
-    x1, y1 = p0
-    x2, y2 = p1
-    xm = (x1 + x2) / 2.0
-    lean_up = 0.45
-    slump_down = 0.30
-    fall_back = 0.2
-    y_up1 = map_number(lean_up, 0, 1, y2, y1)
-    y_up2 = map_number(1 + lean_up, 0, 1, y2, y1)
-    y_down1 = map_number(slump_down, 0, 1, y1, y2)
-    y_down2 = map_number(1 + slump_down, 0, 1, y1, y2)
-    x_fall_back1 = map_number(fall_back, 0, 1, x2, xm)
-    x_fall_back2 = map_number(fall_back, 0, 1, x1, xm)
-
-    pts = []
-    # center bottom
-    pts.append([xm, y_down2])
-    # vertical line on right side
-    pts.extend([[x2, y_up1], [x2, y_up2]])
-    # horizontal line back
-    pts.append([x_fall_back1, y_up2])
-    # center top
-    pts.append([xm, y_down1])
-    # back up to top
-    pts.append([x_fall_back2, y_up2])
-    # vertical line on left side
-    pts.extend([[x1, y_up2], [x1, y_up1]])
-    return pts
-
 shift_pixel_types = ["hex", "rectshift", "diamond"]
 
 class PixelDrawer(DrawingInterface):
@@ -171,14 +106,7 @@ class PixelDrawer(DrawingInterface):
         self.pixel_type = settings.pixel_type
 
         if settings.pixel_iso_check and settings.pixel_size is None:
-            if self.pixel_type == "tri":
-                # auto-adjust triangles to be wider if not specified
-                self.num_cols = int(1.414 * self.num_cols)
-            elif self.pixel_type == "hex":
-                # auto-adjust hexes to be narrower if not specified
-                self.num_rows = int(1.414 * self.num_rows)
-            elif self.pixel_type == "diamond":
-                self.num_rows = int(2 * self.num_rows)
+             pass
  
         # we can also "scale" pixels -- scaling "up" meaning fewer rows/cols, etc.
         if settings.pixel_scale is not None and settings.pixel_scale > 0:
@@ -258,20 +186,13 @@ class PixelDrawer(DrawingInterface):
         points_vars = [] # common
 
         pts_bases = []
-        pts_bases_30 = []
-        pts_bases_45 = []
-        pts_bases_30r90 = []
+#        pts_bases_30 = []
+#        pts_bases_45 = []
+#        pts_bases_30r90 = []
 
-#        shapes_30 = []
-#        shapes_45 = []
-#        shapes_30r90 = []
 
         shape_groups = []
-#        shape_groups_30 = []
-#        shape_groups_45 = []
-#        shape_groups_30r90 = []
 
-        # colors = []
         scaled_init_tensor = (init_tensor[0] + 1.0) / 2.0
 
         projector = Projector(canvas_width, num_rows, num_cols)
@@ -324,32 +245,8 @@ class PixelDrawer(DrawingInterface):
                     for phi, theta in phis_thetas 
                 ]
                      
-#                p30 = get_point_base(r, c, 30, canvas_width, num_rows, num_cols)
-#                p45 = get_point_base(r, c, 45, canvas_width, num_rows, num_cols)
-#
-#                p30r90 = get_point_base(c, r, 30, canvas_width, num_rows, num_cols)
-
-#                p0 = [
-#                            canvas_width * npcos(30) * (r+c) / (npcos(30) * (num_rows + num_cols)), 
-#                            canvas_width * npsin(30) * (r-c) / (npcos(30) * (num_rows + num_cols)) + canvas_width * npsin(30) * (num_cols) / (npcos(30) * (num_rows + num_cols))
-#                     ]
-#
-#                if self.pixel_type == "hex":
-#                    pts = hex_from_corners(p0, p1)
-#                elif self.pixel_type == "tri":
-#                    pts = tri_from_corners(p0, p1, (r + c) % 2 == 0)
-#                elif self.pixel_type == "diamond":
-#                    pts = diamond_from_corners(p0, p1)
-#                elif self.pixel_type == "knit":
-#                    pts = knit_from_corners(p0, p1)
-#                else:
-#                    pts = rect_from_corners(p0, p1)
-
-#                pts_base_30 = torch.tensor([p30, p30], dtype=torch.float32, requires_grad=False)
-#                pts_base_45 = torch.tensor([p45, p45], dtype=torch.float32, requires_grad=False)
-#                pts_base_30r90 = torch.tensor([p30r90, p30r90], dtype=torch.float32, requires_grad=False)
                 pre_voxels = [
-                    torch.tensor([voxel_base_projection, voxel_base_projection], dtype=torch.float32, requires_grad=False)
+                    torch.tensor([voxel_base_projection, voxel_base_projection].T, dtype=torch.float32, requires_grad=False)
                     for voxel_base_projection in voxel_base_projections
                 ]
 
@@ -360,30 +257,14 @@ class PixelDrawer(DrawingInterface):
                     pre_voxel - torch.abs(height_tensor) * self.VERTICAL_BRICK
                     for pre_voxel in pre_voxels
                 ]
-		# testing
-#                pts_base = pts_base_45
-#                pts = pts_base - torch.abs(height_tensor) * self.VERTICAL_BRICK
-#
-#                pts_30 = pts_base_30 - torch.abs(height_tensor) * self.VERTICAL_BRICK
-#                pts_45 = pts_base_45 - torch.abs(height_tensor) * self.VERTICAL_BRICK
-#                pts_30r90 = pts_base_30r90 - torch.abs(height_tensor) * self.VERTICAL_BRICK
 
 
                 paths = [
                     pydiffvg.Polygon(voxel, False, stroke_width = torch.tensor(2))
                     for voxel in voxels
                 ]
-#                path = pydiffvg.Polygon(pts, False, stroke_width = torch.tensor(2))
-#
-#                path_30 = pydiffvg.Polygon(pts_30, False, stroke_width = torch.tensor(2))
-#                path_45 = pydiffvg.Polygon(pts_45, False, stroke_width = torch.tensor(2))
-#                path_30r90 = pydiffvg.Polygon(pts_30r90, False, stroke_width = torch.tensor(2))
 
                 pre_voxel_map.append(pre_voxels)
-#                pts_bases.append(pts_base)
-#                pts_bases_30.append(pts_base_30)
-#                pts_bases_45.append(pts_base_45)
-#                pts_bases_30r90.append(pts_base_30r90)
 
                 for shapes, path in zip(
                     many_shapes,
@@ -393,14 +274,6 @@ class PixelDrawer(DrawingInterface):
 
                 path_group = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(many_shapes[0]) - 1]), stroke_color = cell_color, fill_color = None)
                 shape_groups.append(path_group)
-#                path_group_30 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_30) - 1]), stroke_color = cell_color, fill_color = None)
-#                path_group_45 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_45) - 1]), stroke_color = cell_color, fill_color = None)
-#                path_group_30r90 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_30r90) - 1]), stroke_color = cell_color, fill_color = None)
-
-
-#                shape_groups_30.append(path_group_30)
-#                shape_groups_45.append(path_group_45)
-#                shape_groups_30r90.append(path_group_30r90)
         # exit()
         # Just some diffvg setup
 
@@ -415,39 +288,14 @@ class PixelDrawer(DrawingInterface):
             group.stroke_color.requires_grad = True
             color_vars.append(group.stroke_color)
 
-#        scene_args_30 = pydiffvg.RenderFunction.serialize_scene(\
-#            canvas_width, canvas_height, shapes_30, shape_groups_30)
-#        scene_args_45 = pydiffvg.RenderFunction.serialize_scene(\
-#            canvas_width, canvas_height, shapes_45, shape_groups_45)
-#        scene_args_30r90 = pydiffvg.RenderFunction.serialize_scene(\
-#            canvas_width, canvas_height, shapes_45, shape_groups_30r90)
-
-
-#        img_30 = render(canvas_width, canvas_height, 2, 2, 0, None, *scene_args_30)
-#        img_45 = render(canvas_width, canvas_height, 2, 2, 0, None, *scene_args_45)
-#        img_30r90 = render(canvas_width, canvas_height, 2, 2, 0, None, *scene_args_30r90)
-
-
         self.color_vars = color_vars
         self.points_vars = points_vars
         self.img = img
 
-        self.pts_bases = pts_bases
-#        self.pts_bases_30 = pts_bases_30
-#        self.pts_bases_45 = pts_bases_45
-#        self.pts_bases_30r90 = pts_bases_30r90
-
 #        self.shapes = shapes 
         self.many_shapes = many_shapes
         self.pre_voxels = pre_voxels
-#        self.shapes_30 = shapes_30 
-#        self.shapes_45 = shapes_45 
-#        self.shapes_30r90 = shapes_30r90 
-
         self.shape_groups = shape_groups
-#        self.shape_groups_30 = shape_groups_30
-#        self.shape_groups_45 = shape_groups_45
-#        self.shape_groups_30r90 = shape_groups_30r90
 
     def get_opts(self, decay_divisor=1):
         # Optimizers
