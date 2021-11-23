@@ -45,7 +45,7 @@ class Projector:
 
        rotation = R.from_euler('zx', [phi, theta], degrees=True)
        rotated = rotation.apply(base_point) 
-       rotated_xy = np.roll(rotated, 1)[2:]  # (x, y, z) -> (z, x, y) -> (z, x) 
+       rotated_xy = np.roll(rotated, 1)[:2]  # (x, y, z) -> (z, x, y) -> (z, x) 
 
        return rotated_xy * self.scale_factor + self.center_point
 
@@ -246,7 +246,7 @@ class PixelDrawer(DrawingInterface):
                 ]
                      
                 pre_voxels = [
-                    torch.tensor([voxel_base_projection, voxel_base_projection], dtype=torch.float32, requires_grad=False).T
+                    torch.tensor([voxel_base_projection, voxel_base_projection], dtype=torch.float32, requires_grad=False)
                     for voxel_base_projection in voxel_base_projections
                 ]
 
