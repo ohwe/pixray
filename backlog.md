@@ -14,6 +14,7 @@
 
 ### Прекрасное далёко
 Тут некоторые мысли, что можно сделать в плюс к обычному вокселятору
+* https://arxiv.org/abs/2109.12922 + https://twitter.com/NJetchev
 * https://twitter.com/ajayj_/status/1436838891957342209
 * https://twitter.com/danielrussruss/status/1436209681265950722
 * https://www.tensorflow.org/graphics/api_docs/python/tfg/rendering
