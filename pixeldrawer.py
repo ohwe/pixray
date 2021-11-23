@@ -196,7 +196,7 @@ class PixelDrawer(DrawingInterface):
         scaled_init_tensor = (init_tensor[0] + 1.0) / 2.0
 
         projector = Projector(canvas_width, num_rows, num_cols)
-        phis_thetas = [(0, 30), (0, 45), (90, 30)]
+        phis_thetas = [(60, -30), (60, -45), (90 + 60, -30)]
         # phis_thetas = [(phi, theta) for phi in range(0, 180 + 1, 15) for theta in range(30, 75 + 1, 5)]
         many_shapes = [list() for _ in phis_thetas]
         many_scene_args = [list() for _ in phis_thetas]
