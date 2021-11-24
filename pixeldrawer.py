@@ -379,10 +379,12 @@ class PixelDrawer(DrawingInterface):
         self.pts_bases_45 = pts_bases_45
         self.pts_bases_30r90 = pts_bases_30r90
 
-        self.shapes = shapes 
-        self.shapes_30 = shapes_30 
-        self.shapes_45 = shapes_45 
-        self.shapes_30r90 = shapes_30r90 
+#        self.shapes = shapes 
+#        self.shapes_30 = shapes_30 
+#        self.shapes_45 = shapes_45 
+#        self.shapes_30r90 = shapes_30r90 
+
+        self.many_shapes = [shapes_30, shapes_45, shapes_30r90]
 
         self.shape_groups = shape_groups
         self.shape_groups_30 = shape_groups_30
