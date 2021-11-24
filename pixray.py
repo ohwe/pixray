@@ -29,6 +29,8 @@ from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normal
 from torch.utils.tensorboard import SummaryWriter
 tb = SummaryWriter()
 
+torch.autograd.set_detect_anomaly(True)
+
 try:
     # installed by adding github.com/openai/CLIP to sys.path
     from CLIP import clip
