@@ -200,7 +200,7 @@ class PixelDrawer(DrawingInterface):
         # phis_thetas = [(phi, theta) for phi in range(0, 180 + 1, 15) for theta in range(30, 75 + 1, 5)]
         many_shapes = [list() for _ in phis_thetas]
         many_scene_args = [list() for _ in phis_thetas]
-        pre_voxel_map = []
+        pre_voxel_maps = [list() for _ in phis_thetas]  # 3 x 6400 TODO: many_pre_voxels?
 
         for r in range(num_rows):
             tensor_cur_y = int(r * tensor_cell_height)
@@ -253,6 +253,9 @@ class PixelDrawer(DrawingInterface):
                 height_tensor = torch.tensor(cell_height, dtype=torch.float32, requires_grad=True)
                 points_vars.append(height_tensor)
 
+                for pre_voxel, pre_voxel_map in zip(pre_voxels, pre_voxel_maps):  # 3 pairs
+                    pre_voxel_map.append(pre_voxels) # 6400 x 3
+
                 voxels = [
                     pre_voxel - torch.abs(height_tensor) * self.VERTICAL_BRICK
                     for pre_voxel in pre_voxels
@@ -261,10 +264,8 @@ class PixelDrawer(DrawingInterface):
 
                 paths = [
                     pydiffvg.Polygon(voxel, False, stroke_width = torch.tensor(2))
-                    for voxel in voxels
+                    for voxel in voxels # 3
                 ]
-
-                pre_voxel_map.append(pre_voxels)
 
                 for shapes, path in zip(
                     many_shapes,
@@ -294,7 +295,7 @@ class PixelDrawer(DrawingInterface):
 
 #        self.shapes = shapes 
         self.many_shapes = many_shapes
-        self.pre_voxels = pre_voxels
+        self.pre_voxel_map = pre_voxel_map
         self.shape_groups = shape_groups
 
     def get_opts(self, decay_divisor=1):
@@ -337,7 +338,7 @@ class PixelDrawer(DrawingInterface):
 #            shape_groups = self.shape_groups_45
  
         shapes = self.many_shapes[view_index] 
-        pre_voxels = self.pre_voxels[view_index]
+        pre_voxels = self.pre_voxel_map[view_index]
         shape_groups = self.shape_groups
 
         for pre_voxel, height_tensor, path in zip(pre_voxels, self.points_vars, shapes):
