@@ -336,15 +336,15 @@ class PixelDrawer(DrawingInterface):
                 shapes_30r90.append(path_30r90)
 
                 path_group = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes) - 1]), stroke_color = cell_color, fill_color = None)
-                path_group_30 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_30) - 1]), stroke_color = cell_color, fill_color = None)
-                path_group_45 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_45) - 1]), stroke_color = cell_color, fill_color = None)
-                path_group_30r90 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_30r90) - 1]), stroke_color = cell_color, fill_color = None)
+#                path_group_30 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_30) - 1]), stroke_color = cell_color, fill_color = None)
+#                path_group_45 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_45) - 1]), stroke_color = cell_color, fill_color = None)
+#                path_group_30r90 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_30r90) - 1]), stroke_color = cell_color, fill_color = None)
 
                 shape_groups.append(path_group)
 
-                shape_groups_30.append(path_group_30)
-                shape_groups_45.append(path_group_45)
-                shape_groups_30r90.append(path_group_30r90)
+#                shape_groups_30.append(path_group_30)
+#                shape_groups_45.append(path_group_45)
+#                shape_groups_30r90.append(path_group_30r90)
         # exit()
         # Just some diffvg setup
 
@@ -391,11 +391,11 @@ class PixelDrawer(DrawingInterface):
 
         self.many_shapes = [shapes_30, shapes_45, shapes_30r90]
 
-#        self.shape_groups = shape_groups
+        self.shape_groups = shape_groups
 #        self.shape_groups_30 = shape_groups_30
 #        self.shape_groups_45 = shape_groups_45
 #        self.shape_groups_30r90 = shape_groups_30r90
-        self.many_shape_groups = [shape_groups_30, shape_groups_45, shape_groups_30r90]
+#        self.many_shape_groups = [shape_groups_30, shape_groups_45, shape_groups_30r90]
 
     def get_opts(self, decay_divisor=1):
         # Optimizers
@@ -425,7 +425,8 @@ class PixelDrawer(DrawingInterface):
 #        if cur_iteration % 3 == 0: # 45, 30r90, 30, 45, 30r90, 30 ....
         pts_bases = self.pre_voxels[(cur_iteration % 3)]  # self.pts_bases_30
         shapes = self.many_shapes[(cur_iteration % 3)]  # self.shapes_30
-        shape_groups = self.many_shape_groups[(cur_iteration % 3)]  # self.shape_groups_30
+#        shape_groups = self.many_shape_groups[(cur_iteration % 3)]  # self.shape_groups_30
+        shape_groups = self.shape_groups
 #        elif cur_iteration % 3 == 1:
 #            pts_bases = self.pts_bases_30r90
 #            shapes = self.shapes_30r90
