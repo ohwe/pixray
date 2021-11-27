@@ -385,7 +385,7 @@ class PixelDrawer(DrawingInterface):
 #        self.pts_bases_45 = pts_bases_45
 #        self.pts_bases_30r90 = pts_bases_30r90
 
-        self.shapes = shapes 
+        self.shapes = shapes  # TODO: remove
 #        self.shapes_30 = shapes_30 
 #        self.shapes_45 = shapes_45 
 #        self.shapes_30r90 = shapes_30r90 
@@ -396,10 +396,16 @@ class PixelDrawer(DrawingInterface):
             shapes_30r90,
         ]
 
-        self.shape_groups = shape_groups
-        self.shape_groups_30 = shape_groups_30
-        self.shape_groups_45 = shape_groups_45
-        self.shape_groups_30r90 = shape_groups_30r90
+        self.shape_groups = shape_groups # TODO: remove
+
+        self.many_shape_groups = [
+            shape_groups_30,
+            shape_groups_45,
+            shape_groups_30r90,
+        ]
+#        self.shape_groups_30 = shape_groups_30
+#        self.shape_groups_45 = shape_groups_45
+#        self.shape_groups_30r90 = shape_groups_30r90
 
     def get_opts(self, decay_divisor=1):
         # Optimizers
@@ -427,20 +433,21 @@ class PixelDrawer(DrawingInterface):
 
 #### re-assign
         pts_bases = self.pre_voxels[(cur_iteration % len(self.pre_voxels))]
-        shapes = self.many_shapes[(cur_iteration % len(self.pre_voxels))]
+        shapes = self.many_shapes[(cur_iteration % len(self.many_shapes))]
+        shape_groups = self.many_shape_groups[(cur_iteration % len(self.many_shape_groups))]
 
-        if cur_iteration % 3 == 0: # 45, 30r90, 30, 45, 30r90, 30 ....
+#        if cur_iteration % 3 == 0: # 45, 30r90, 30, 45, 30r90, 30 ....
 #            pts_bases = self.pts_bases_30
 #            shapes = self.shapes_30
-            shape_groups = self.shape_groups_30
-        elif cur_iteration % 3 == 1:
+#            shape_groups = self.shape_groups_30
+#        elif cur_iteration % 3 == 1:
 #            pts_bases = self.pts_bases_30r90
 #            shapes = self.shapes_30r90
-            shape_groups = self.shape_groups_30r90
-        else:
+#            shape_groups = self.shape_groups_30r90
+#        else:
 #            pts_bases = self.pts_bases_45
 #            shapes = self.shapes_45
-            shape_groups = self.shape_groups_45
+#            shape_groups = self.shape_groups_45
   
 
         for pts_base, height_tensor, path in zip(pts_bases, self.points_vars, shapes):
