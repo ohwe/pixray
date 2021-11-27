@@ -298,18 +298,23 @@ class PixelDrawer(DrawingInterface):
                 pts_base = pts_base_45
                 pts = pts_base - torch.abs(height_tensor) * self.VERTICAL_BRICK
 
-                pts_30 = pts_base_30 - torch.abs(height_tensor) * self.VERTICAL_BRICK
-                pts_45 = pts_base_45 - torch.abs(height_tensor) * self.VERTICAL_BRICK
-                pts_30r90 = pts_base_30r90 - torch.abs(height_tensor) * self.VERTICAL_BRICK
+#                pts_30 = pts_base_30 - torch.abs(height_tensor) * self.VERTICAL_BRICK
+#                pts_45 = pts_base_45 - torch.abs(height_tensor) * self.VERTICAL_BRICK
+#                pts_30r90 = pts_base_30r90 - torch.abs(height_tensor) * self.VERTICAL_BRICK
+#                
+                many_pts = [
+                    pts_base_30 - torch.abs(height_tensor) * self.VERTICAL_BRICK,
+                    pts_base_45 - torch.abs(height_tensor) * self.VERTICAL_BRICK,
+                    pts_base_30r90 - torch.abs(height_tensor) * self.VERTICAL_BRICK,
+                ]
 
                 points_vars.append(height_tensor)
 
                 path = pydiffvg.Polygon(pts, False, stroke_width = torch.tensor(2))
 
                 many_paths = [
-                    pydiffvg.Polygon(pts_30, False, stroke_width = torch.tensor(2)),
-                    pydiffvg.Polygon(pts_45, False, stroke_width = torch.tensor(2)),
-                    pydiffvg.Polygon(pts_30r90, False, stroke_width = torch.tensor(2)),
+                    pydiffvg.Polygon(a_pts, False, stroke_width = torch.tensor(2)),
+                    for a_pts in many_pts
                 ]
 
                 pts_bases.append(pts_base)
