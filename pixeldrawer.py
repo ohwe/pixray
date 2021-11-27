@@ -374,10 +374,16 @@ class PixelDrawer(DrawingInterface):
         self.points_vars = points_vars
         self.img = img
 
-        self.pts_bases = pts_bases
-        self.pts_bases_30 = pts_bases_30
-        self.pts_bases_45 = pts_bases_45
-        self.pts_bases_30r90 = pts_bases_30r90
+   #     self.pts_bases = pts_bases
+        self.pre_voxels = [
+            pts_bases_30,
+            pts_bases_45,
+	    pts_bases_30r90,
+        ]
+   
+#        self.pts_bases_30 = pts_bases_30
+#        self.pts_bases_45 = pts_bases_45
+#        self.pts_bases_30r90 = pts_bases_30r90
 
         self.shapes = shapes 
         self.shapes_30 = shapes_30 
@@ -414,16 +420,17 @@ class PixelDrawer(DrawingInterface):
         render = pydiffvg.RenderFunction.apply
 
 #### re-assign
+        pts_bases = self.pre_voxels[(cur_iteration % len(self.pre_voxels))]
         if cur_iteration % 3 == 0: # 45, 30r90, 30, 45, 30r90, 30 ....
-            pts_bases = self.pts_bases_30
+#            pts_bases = self.pts_bases_30
             shapes = self.shapes_30
             shape_groups = self.shape_groups_30
         elif cur_iteration % 3 == 1:
-            pts_bases = self.pts_bases_30r90
+#            pts_bases = self.pts_bases_30r90
             shapes = self.shapes_30r90
             shape_groups = self.shape_groups_30r90
         else:
-            pts_bases = self.pts_bases_45
+#            pts_bases = self.pts_bases_45
             shapes = self.shapes_45
             shape_groups = self.shape_groups_45
   
