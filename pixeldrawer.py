@@ -386,9 +386,15 @@ class PixelDrawer(DrawingInterface):
 #        self.pts_bases_30r90 = pts_bases_30r90
 
         self.shapes = shapes 
-        self.shapes_30 = shapes_30 
-        self.shapes_45 = shapes_45 
-        self.shapes_30r90 = shapes_30r90 
+#        self.shapes_30 = shapes_30 
+#        self.shapes_45 = shapes_45 
+#        self.shapes_30r90 = shapes_30r90 
+
+        self.many_shapes = [
+            shapes_30,
+            shapes_45,
+            shapes_30r90,
+        ]
 
         self.shape_groups = shape_groups
         self.shape_groups_30 = shape_groups_30
@@ -421,17 +427,19 @@ class PixelDrawer(DrawingInterface):
 
 #### re-assign
         pts_bases = self.pre_voxels[(cur_iteration % len(self.pre_voxels))]
+        shapes = self.many_shapes[(cur_iteration % len(self.pre_voxels))]
+
         if cur_iteration % 3 == 0: # 45, 30r90, 30, 45, 30r90, 30 ....
 #            pts_bases = self.pts_bases_30
-            shapes = self.shapes_30
+#            shapes = self.shapes_30
             shape_groups = self.shape_groups_30
         elif cur_iteration % 3 == 1:
 #            pts_bases = self.pts_bases_30r90
-            shapes = self.shapes_30r90
+#            shapes = self.shapes_30r90
             shape_groups = self.shape_groups_30r90
         else:
 #            pts_bases = self.pts_bases_45
-            shapes = self.shapes_45
+#            shapes = self.shapes_45
             shape_groups = self.shape_groups_45
   
 
