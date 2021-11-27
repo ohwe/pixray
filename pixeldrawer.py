@@ -374,11 +374,16 @@ class PixelDrawer(DrawingInterface):
         self.points_vars = points_vars
         self.img = img
 
-        self.pts_bases = pts_bases
-        self.pts_bases_30 = pts_bases_30
-        self.pts_bases_45 = pts_bases_45
-        self.pts_bases_30r90 = pts_bases_30r90
-
+#        self.pts_bases = pts_bases
+        
+#        self.pts_bases_30 = pts_bases_30
+#        self.pts_bases_45 = pts_bases_45
+#        self.pts_bases_30r90 = pts_bases_30r90
+        self.pre_voxels = [
+            pts_bases_30,
+            pts_bases_45,
+            pts_bases_30r90,
+        ]
 #        self.shapes = shapes 
 #        self.shapes_30 = shapes_30 
 #        self.shapes_45 = shapes_45 
@@ -386,10 +391,11 @@ class PixelDrawer(DrawingInterface):
 
         self.many_shapes = [shapes_30, shapes_45, shapes_30r90]
 
-        self.shape_groups = shape_groups
-        self.shape_groups_30 = shape_groups_30
-        self.shape_groups_45 = shape_groups_45
-        self.shape_groups_30r90 = shape_groups_30r90
+#        self.shape_groups = shape_groups
+#        self.shape_groups_30 = shape_groups_30
+#        self.shape_groups_45 = shape_groups_45
+#        self.shape_groups_30r90 = shape_groups_30r90
+        self.many_shape_groups = [shape_groups_30, shape_groups_45, shape_groups_30r90]
 
     def get_opts(self, decay_divisor=1):
         # Optimizers
@@ -416,18 +422,18 @@ class PixelDrawer(DrawingInterface):
         render = pydiffvg.RenderFunction.apply
 
 #### re-assign
-        if cur_iteration % 3 == 0: # 45, 30r90, 30, 45, 30r90, 30 ....
-            pts_bases = self.pts_bases_30
-            shapes = self.shapes_30
-            shape_groups = self.shape_groups_30
-        elif cur_iteration % 3 == 1:
-            pts_bases = self.pts_bases_30r90
-            shapes = self.shapes_30r90
-            shape_groups = self.shape_groups_30r90
-        else:
-            pts_bases = self.pts_bases_45
-            shapes = self.shapes_45
-            shape_groups = self.shape_groups_45
+#        if cur_iteration % 3 == 0: # 45, 30r90, 30, 45, 30r90, 30 ....
+        pts_bases = self.pre_voxels[(cur_iteration % 3)]  # self.pts_bases_30
+        shapes = self.many_shapes[(cur_iteration % 3)]  # self.shapes_30
+        shape_groups = self.many_shape_groups[(cur_iteration % 3)]  # self.shape_groups_30
+#        elif cur_iteration % 3 == 1:
+#            pts_bases = self.pts_bases_30r90
+#            shapes = self.shapes_30r90
+#            shape_groups = self.shape_groups_30r90
+#        else:
+#            pts_bases = self.pts_bases_45
+#            shapes = self.shapes_45
+#            shape_groups = self.shape_groups_45
   
 
         for pts_base, height_tensor, path in zip(pts_bases, self.points_vars, shapes):
