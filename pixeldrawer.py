@@ -313,7 +313,7 @@ class PixelDrawer(DrawingInterface):
                 path = pydiffvg.Polygon(pts, False, stroke_width = torch.tensor(2))
 
                 many_paths = [
-                    pydiffvg.Polygon(a_pts, False, stroke_width = torch.tensor(2)),
+                    pydiffvg.Polygon(a_pts, False, stroke_width = torch.tensor(2))
                     for a_pts in many_pts
                 ]
 
