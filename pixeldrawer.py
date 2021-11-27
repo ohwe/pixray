@@ -287,21 +287,6 @@ class PixelDrawer(DrawingInterface):
                 p45 = get_point_base(r, c, 45, canvas_width, num_rows, num_cols)
 
                 p30r90 = get_point_base(c, r, 30, canvas_width, num_rows, num_cols)
-#                p0 = [
-#                            canvas_width * npcos(30) * (r+c) / (npcos(30) * (num_rows + num_cols)), 
-#                            canvas_width * npsin(30) * (r-c) / (npcos(30) * (num_rows + num_cols)) + canvas_width * npsin(30) * (num_cols) / (npcos(30) * (num_rows + num_cols))
-#                     ]
-#
-#                if self.pixel_type == "hex":
-#                    pts = hex_from_corners(p0, p1)
-#                elif self.pixel_type == "tri":
-#                    pts = tri_from_corners(p0, p1, (r + c) % 2 == 0)
-#                elif self.pixel_type == "diamond":
-#                    pts = diamond_from_corners(p0, p1)
-#                elif self.pixel_type == "knit":
-#                    pts = knit_from_corners(p0, p1)
-#                else:
-#                    pts = rect_from_corners(p0, p1)
 
                 pts_base_30 = torch.tensor([p30, p30], dtype=torch.float32, requires_grad=False)
                 pts_base_45 = torch.tensor([p45, p45], dtype=torch.float32, requires_grad=False)
@@ -330,21 +315,31 @@ class PixelDrawer(DrawingInterface):
                 pts_bases_45.append(pts_base_45)
                 pts_bases_30r90.append(pts_base_30r90)
 
-                shapes.append(path)
+                shapes.append(path) # TODO: remove
                 shapes_30.append(path_30)
                 shapes_45.append(path_45)
                 shapes_30r90.append(path_30r90)
 
                 path_group = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes) - 1]), stroke_color = cell_color, fill_color = None)
-                path_group_30 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_30) - 1]), stroke_color = cell_color, fill_color = None)
-                path_group_45 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_45) - 1]), stroke_color = cell_color, fill_color = None)
-                path_group_30r90 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_30r90) - 1]), stroke_color = cell_color, fill_color = None)
+                many_shapes = [shapes_30, shapes_45, shapes_30r90]
+                many_path_group = [
+                    pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(a_shapes) - 1]), stroke_color = cell_color, fill_color = None)
+                    for a_shapes in many_shapes
+                ]
 
-                shape_groups.append(path_group)
+#                path_group_30 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_30) - 1]), stroke_color = cell_color, fill_color = None)
+#                path_group_45 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_45) - 1]), stroke_color = cell_color, fill_color = None)
+#                path_group_30r90 = pydiffvg.ShapeGroup(shape_ids = torch.tensor([len(shapes_30r90) - 1]), stroke_color = cell_color, fill_color = None)
 
-                shape_groups_30.append(path_group_30)
-                shape_groups_45.append(path_group_45)
-                shape_groups_30r90.append(path_group_30r90)
+                shape_groups.append(path_group) # TODO: remove
+
+                many_shape_groups = [
+                    shape_groups_30,
+                    shape_groups_45,
+                    shape_groups_30r90,
+                ]
+                for a_shape_groups, path_group in zip(many_shape_groups, many_path_group):
+                    a_shape_groups.append(path_group)
         # exit()
         # Just some diffvg setup
 
@@ -378,7 +373,7 @@ class PixelDrawer(DrawingInterface):
         self.pre_voxels = [
             pts_bases_30,
             pts_bases_45,
-	    pts_bases_30r90,
+            pts_bases_30r90,
         ]
    
 #        self.pts_bases_30 = pts_bases_30
