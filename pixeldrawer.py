@@ -305,7 +305,7 @@ class PixelDrawer(DrawingInterface):
                 height_tensor = torch.tensor(cell_height, dtype=torch.float32, requires_grad=True)
 
 		# testing
-                pts_base = pts_base_45
+                pts_base = many_pts_bases[1]
                 pts = pts_base - torch.abs(height_tensor) * self.VERTICAL_BRICK
 
 #                pts_30 = pts_base_30 - torch.abs(height_tensor) * self.VERTICAL_BRICK
