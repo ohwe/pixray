@@ -283,16 +283,24 @@ class PixelDrawer(DrawingInterface):
                         mono_color = random.random()
                         cell_color = torch.tensor([mono_color, mono_color, mono_color, 1.0])
                 # colors.append(cell_color)
+
                 p30 = get_point_base(r, c, 30, canvas_width, num_rows, num_cols)
                 p45 = get_point_base(r, c, 45, canvas_width, num_rows, num_cols)
 
                 p30r90 = get_point_base(c, r, 30, canvas_width, num_rows, num_cols)
 
-                pts_base_30 = torch.tensor([p30, p30], dtype=torch.float32, requires_grad=False)
-                pts_base_45 = torch.tensor([p45, p45], dtype=torch.float32, requires_grad=False)
-                pts_base_30r90 = torch.tensor([p30r90, p30r90], dtype=torch.float32, requires_grad=False)
+                many_points = [p30, p45, p30r90]
 
-                many_pts_bases = [pts_base_30, pts_base_45, pts_base_30r90]
+#                pts_base_30 = torch.tensor([p30, p30], dtype=torch.float32, requires_grad=False)
+#                pts_base_45 = torch.tensor([p45, p45], dtype=torch.float32, requires_grad=False)
+#                pts_base_30r90 = torch.tensor([p30r90, p30r90], dtype=torch.float32, requires_grad=False)
+
+                many_pts_bases = [
+                    torch.tensor([point, point], dtype=torch.float32, requires_grad=False)
+                    for point in many_points
+                ]
+
+# [pts_base_30, pts_base_45, pts_base_30r90]
 
                 height_tensor = torch.tensor(cell_height, dtype=torch.float32, requires_grad=True)
 
