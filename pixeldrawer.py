@@ -292,6 +292,8 @@ class PixelDrawer(DrawingInterface):
                 pts_base_45 = torch.tensor([p45, p45], dtype=torch.float32, requires_grad=False)
                 pts_base_30r90 = torch.tensor([p30r90, p30r90], dtype=torch.float32, requires_grad=False)
 
+                many_pts_bases = [pts_base_30, pts_base_45, pts_base_30r90]
+
                 height_tensor = torch.tensor(cell_height, dtype=torch.float32, requires_grad=True)
 
 		# testing
@@ -310,19 +312,19 @@ class PixelDrawer(DrawingInterface):
 
                 points_vars.append(height_tensor)
 
-                path = pydiffvg.Polygon(pts, False, stroke_width = torch.tensor(2))
+                path = pydiffvg.Polygon(pts, False, stroke_width = torch.tensor(2)) # TODO: remove
 
                 many_paths = [
                     pydiffvg.Polygon(a_pts, False, stroke_width = torch.tensor(2))
                     for a_pts in many_pts
                 ]
 
-                pts_bases.append(pts_base)
+                pts_bases.append(pts_base)  # TODO: remove
                 pts_bases_30.append(pts_base_30)
                 pts_bases_45.append(pts_base_45)
                 pts_bases_30r90.append(pts_base_30r90)
 
-                shapes.append(path) # TODO: remove
+                shapes.append(path)  # TODO: remove
 
                 many_shapes = [shapes_30, shapes_45, shapes_30r90]
 
