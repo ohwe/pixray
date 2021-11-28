@@ -230,9 +230,11 @@ class PixelDrawer(DrawingInterface):
         points_vars = [] # common
 
         pts_bases = []
-        pts_bases_30 = []
-        pts_bases_45 = []
-        pts_bases_30r90 = []
+#        pts_bases_30 = []
+#        pts_bases_45 = []
+#        pts_bases_30r90 = []
+        many = 3
+        many_pts_base_map = [list() for _ in range(many)]
 
         shapes = []
         shapes_30 = []
@@ -295,17 +297,21 @@ class PixelDrawer(DrawingInterface):
 #                pts_base_45 = torch.tensor([p45, p45], dtype=torch.float32, requires_grad=False)
 #                pts_base_30r90 = torch.tensor([p30r90, p30r90], dtype=torch.float32, requires_grad=False)
 
-                many_pts_bases = [
+                many_pts_base = [
                     torch.tensor([point, point], dtype=torch.float32, requires_grad=False)
                     for point in many_points
                 ]
+
+                for base_map, a_pts_base in zip(many_pts_base_map, many_pts_base):
+                    base_map.append(a_pts_base)
+                    
 
 # [pts_base_30, pts_base_45, pts_base_30r90]
 
                 height_tensor = torch.tensor(cell_height, dtype=torch.float32, requires_grad=True)
 
 		# testing
-                pts_base = many_pts_bases[1]
+                pts_base = many_pts_base[1]
                 pts = pts_base - torch.abs(height_tensor) * self.VERTICAL_BRICK
 
 #                pts_30 = pts_base_30 - torch.abs(height_tensor) * self.VERTICAL_BRICK
@@ -314,7 +320,7 @@ class PixelDrawer(DrawingInterface):
 #                
                 many_pts = [
                     a_pts_base - torch.abs(height_tensor) * self.VERTICAL_BRICK
-                    for a_pts_base in many_pts_bases
+                    for a_pts_base in many_pts_base
 #                    pts_base_30 - torch.abs(height_tensor) * self.VERTICAL_BRICK,
 #                    pts_base_45 - torch.abs(height_tensor) * self.VERTICAL_BRICK,
 #                    pts_base_30r90 - torch.abs(height_tensor) * self.VERTICAL_BRICK,
@@ -330,9 +336,9 @@ class PixelDrawer(DrawingInterface):
                 ]
 
                 pts_bases.append(pts_base)  # TODO: remove
-                pts_bases_30.append(pts_base_30)
-                pts_bases_45.append(pts_base_45)
-                pts_bases_30r90.append(pts_base_30r90)
+#                pts_bases_30.append(pts_base_30)
+#                pts_bases_45.append(pts_base_45)
+#                pts_bases_30r90.append(pts_base_30r90)
 
                 shapes.append(path)  # TODO: remove
 
@@ -391,11 +397,12 @@ class PixelDrawer(DrawingInterface):
         self.img = img
 
    #     self.pts_bases = pts_bases
-        self.pre_voxels = [
-            pts_bases_30,
-            pts_bases_45,
-            pts_bases_30r90,
-        ]
+        self.pre_voxels = many_pts_base_map
+#        self.pre_voxels = [
+#            pts_bases_30,
+#            pts_bases_45,
+#            pts_bases_30r90,
+#        ]
    
 #        self.pts_bases_30 = pts_bases_30
 #        self.pts_bases_45 = pts_bases_45
