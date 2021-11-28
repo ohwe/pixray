@@ -313,9 +313,11 @@ class PixelDrawer(DrawingInterface):
 #                pts_30r90 = pts_base_30r90 - torch.abs(height_tensor) * self.VERTICAL_BRICK
 #                
                 many_pts = [
-                    pts_base_30 - torch.abs(height_tensor) * self.VERTICAL_BRICK,
-                    pts_base_45 - torch.abs(height_tensor) * self.VERTICAL_BRICK,
-                    pts_base_30r90 - torch.abs(height_tensor) * self.VERTICAL_BRICK,
+                    a_pts_base - torch.abs(height_tensor) * self.VERTICAL_BRICK
+                    for a_pts_base in many_pts_bases
+#                    pts_base_30 - torch.abs(height_tensor) * self.VERTICAL_BRICK,
+#                    pts_base_45 - torch.abs(height_tensor) * self.VERTICAL_BRICK,
+#                    pts_base_30r90 - torch.abs(height_tensor) * self.VERTICAL_BRICK,
                 ]
 
                 points_vars.append(height_tensor)
