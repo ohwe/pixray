@@ -414,11 +414,12 @@ class PixelDrawer(DrawingInterface):
 
         self.shape_groups = shape_groups # TODO: remove
 
-        self.many_shape_groups = [
-            shape_groups_30,
-            shape_groups_45,
-            shape_groups_30r90,
-        ]
+        self.many_shape_groups = many_shape_groups
+#        [
+#            shape_groups_30,
+#            shape_groups_45,
+#            shape_groups_30r90,
+#        ]
 #        self.shape_groups_30 = shape_groups_30
 #        self.shape_groups_45 = shape_groups_45
 #        self.shape_groups_30r90 = shape_groups_30r90
