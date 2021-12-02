@@ -16,6 +16,32 @@ import PIL.Image
 
 from util import str2bool
 
+from scipy.spatial.transform import Rotation as R
+
+class Projector:
+   def __init__(self, canvas_width, num_rows, num_cols):
+       self.canvas_width = canvas_width 
+       self.num_rows = num_rows
+       self.num_cols = num_cols
+
+       self.scale_factor = int(math.floor(math.sqrt(2) * canvas_width / (num_rows + num_cols)))
+       self.center_point = np.array([
+           canvas_width // 2, 
+           canvas_width // 2, 
+       ])
+
+   def __call__(self, r:int, c:int, phi: int, theta: int):
+       r_centered = r - self.num_rows // 2
+       c_centered = c - self.num_cols // 2
+       base_point = np.array([r_centered, c_centered, 0])
+
+       rotation = R.from_euler('ZX', [phi, theta], degrees=True)
+       rotated = rotation.apply(base_point) 
+       rotated_xy = np.roll(rotated, 2)[:2]  # (x, y, z) -> (y, z, x) -> (y, z) 
+
+       return rotated_xy * self.scale_factor + self.center_point
+
+
 def npsin(x):
     return np.sin(x * np.pi / 180)
 
@@ -203,6 +229,8 @@ class PixelDrawer(DrawingInterface):
         cell_width = canvas_width / num_cols
         cell_height = canvas_height / num_rows
 
+        self.projector = Projector(canvas_width, num_rows, num_cols) 
+
         tensor_cell_height = 0
         tensor_cell_width = 0
         max_tensor_num_subsamples = 4
@@ -288,12 +316,15 @@ class PixelDrawer(DrawingInterface):
                         cell_color = torch.tensor([mono_color, mono_color, mono_color, 1.0])
                 # colors.append(cell_color)
 
-                p30 = get_point_base(r, c, 30, canvas_width, num_rows, num_cols)
-                p45 = get_point_base(r, c, 45, canvas_width, num_rows, num_cols)
+#                p30 = get_point_base(r, c, 30, canvas_width, num_rows, num_cols)
+#                p45 = get_point_base(r, c, 45, canvas_width, num_rows, num_cols)
+#
+#                p30r90 = get_point_base(c, r, 30, canvas_width, num_rows, num_cols)
+#                many_points = [p30, p45, p30r90]
 
-                p30r90 = get_point_base(c, r, 30, canvas_width, num_rows, num_cols)
+                angles = [(75, 5), (75, 10), (90, 5)]
+                many_points = [self.projector(r, c, phi, theta) for phi, theta in angles]
 
-                many_points = [p30, p45, p30r90]
 
 #                pts_base_30 = torch.tensor([p30, p30], dtype=torch.float32, requires_grad=False)
 #                pts_base_45 = torch.tensor([p45, p45], dtype=torch.float32, requires_grad=False)
