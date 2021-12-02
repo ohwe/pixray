@@ -322,7 +322,7 @@ class PixelDrawer(DrawingInterface):
 #                p30r90 = get_point_base(c, r, 30, canvas_width, num_rows, num_cols)
 #                many_points = [p30, p45, p30r90]
 
-                angles = [(75, 5), (75, 10), (90, 5)]
+                angles = [(75, -5), (75, -10), (90, -5)]
                 many_points = [self.projector(r, c, phi, theta) for phi, theta in angles]
 
 
