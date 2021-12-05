@@ -261,7 +261,9 @@ class PixelDrawer(DrawingInterface):
 #        pts_bases_30 = []
 #        pts_bases_45 = []
 #        pts_bases_30r90 = []
-        many = 3
+
+        angles = [(75, -5), (75, -10), (105, -5)]
+        many = len(angles)
         many_pts_base_map = [list() for _ in range(many)]
         many_shapes = [list() for _ in range(many)]
         many_shape_groups = [list() for _ in range(many)]
@@ -322,7 +324,6 @@ class PixelDrawer(DrawingInterface):
 #                p30r90 = get_point_base(c, r, 30, canvas_width, num_rows, num_cols)
 #                many_points = [p30, p45, p30r90]
 
-                angles = [(75, -5), (75, -10), (90, -5)]
                 many_points = [self.projector(r, c, phi, theta) for phi, theta in angles]
 
 
