@@ -262,7 +262,9 @@ class PixelDrawer(DrawingInterface):
 #        pts_bases_45 = []
 #        pts_bases_30r90 = []
 
-        angles = [(75, -10), (75, -20), (105, 30)]
+#        angles = [(75, -10), (75, -20), (105, 30)]
+        angles = [(60, -10), (60, -15), (75, -20), (75, -25)]
+
         many = len(angles)
         many_pts_base_map = [list() for _ in range(many)]
         many_shapes = [list() for _ in range(many)]
