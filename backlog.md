@@ -19,6 +19,10 @@
 
 ### Прекрасное далёко
 Тут некоторые мысли, что можно сделать в плюс к обычному вокселятору
+* text2voxel
+  * https://twitter.com/apeoffire/status/1476676130535051270
+  * https://colab.research.google.com/drive/1y0cR5goZ2go6SlYqVIZy7e7g0cOE3prE
+  * https://twitter.com/apeoffire/status/1478465287028711427
 * https://arxiv.org/abs/2109.12922 + https://twitter.com/NJetchev
 * https://paperswithcode.com/paper/text2mesh-text-driven-neural-stylization-for?from=n22
 * https://twitter.com/b_nicolet/status/1468954052524273664
